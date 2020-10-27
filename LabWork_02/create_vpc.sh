@@ -2,7 +2,7 @@
 
 NL=$'\n'
 AWS_REGION="us-east-1"
-VPC_NAME="lab_03_vpc"
+VPC_NAME="lab_02_vpc"
 VPC_CIDR="10.0.0.0/16"
 SUBNET_PUBLIC_CIDR="10.0.0.0/24"
 SUBNET_PRIVATE_CIDR="10.0.1.0/24"
