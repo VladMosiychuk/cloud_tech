@@ -1,5 +1,5 @@
 # Create bucket command:
-aws s3 mb s3://itsu-lab-01-bucket --region eu-central-1
+aws s3 mb s3://itsu-lab-01-bucket --region us-east-1
 
 # Upload files
 aws s3 sync website/ s3://itsu-lab-01-bucket/
