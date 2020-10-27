@@ -1,0 +1,1 @@
+aws s3 rb s3://itsu-lab-01-bucket --force
