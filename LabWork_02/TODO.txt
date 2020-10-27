@@ -1,0 +1,10 @@
+1. Create new VPC (not default!)
+2. Create two separate Subnets in your VPC (Net1 - public, Net2 - private). IP calculator will help you)
+3. Create Inernet Gateway in Net1. Obtain external IP.
+4. Configure Route Table for Net1
+5. Create EC2 instance in Net1 (Type: t2.micro or t3.micro. Image: AWS Linux)
+6. Configure Security Group on EC2 instance for TCP port 22.
+7. Write IP of your EC2 instance to results_table.
+8. Check your result with: ssh <IP of your instance> 
+
+    Note: all shoud be completed only with aws_cli
