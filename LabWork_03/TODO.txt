@@ -1,0 +1,10 @@
+1. Create new EC2 instance with PublicIP (Type: t2.micro, Image: Amazon Linux). Use default VPC.
+2. Configure SecurityGroup:  enable incoming TCP/22, TCP/80, TCP/443
+3. Tag your instance: (key: Role; value: WebServer)
+4. Write simple script to setup Apache Web Server. Make this Web server enable for autostart. 
+5. Put your script (p.2) to EC2 UserData for instance provisioning. 
+6. Create custom AMI of your WebServer instance.
+7. Push your CLI commands and UserData script to GitHub and post github URL to results_table.
+8. Check your work: recreate instance from your custom AMI. Check your Web server with browser. 
+
+    Note: all shoud be completed only with aws_cli
