@@ -1,0 +1,8 @@
+1. Create new ALB (Application Load balancer). Type: intrernet-faced
+2. Configure SecurityGroup for your LB:  enable incoming TCP/80.
+3. Create two ec2 instances in the same VPC (default) as it is for ELB. Use AMI image from Practic #3.
+4. Configure security group for your instances to allow incoming trafic only from LB. 
+5. Add your instances to LB Target Group.
+6. Manually modify index.html on each of your Apache servers to be different.
+7. Check your LB and write URL to to results_table.
+8. Bonus task: create ASG for your instances. Configure it for your LB. (Min size:2, Max size:2) 
