@@ -1,2 +1,5 @@
 # Destructors for all labworks
 */destructor.sh
+
+# SSH Keys
+*.pem
