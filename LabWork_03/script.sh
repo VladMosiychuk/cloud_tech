@@ -88,7 +88,20 @@ aws ec2 create-tags \
 echo "-------> Wait for instance setup"
 
 # Wait for instance statustates to be `running`
-bash waitfor.sh -i $INSTANCE_ID -s running -d 5s
+bash ../Common/waitfor.sh -i $INSTANCE_ID -s running -d 5s
+
+
+echo "-------> Wait for index.html file to be created"
+
+# Find out Public IP of created instance 
+PUBLIC_IP=$(aws ec2 describe-instances \
+    --instance-id $INSTANCE_ID \
+    --query 'Reservations[0].Instances[0].{PublicIpAddress:PublicIpAddress}' \
+    --output text \
+    --region $AWS_REGION)
+
+# Wait for index.html file to be created
+bash ../Common/waitforfile.sh -i $SSH_KEY_FILE -h $PUBLIC_IP -f /var/www/html/index.html
 
 echo "-------> Create Image out of instance"
 
@@ -97,14 +110,13 @@ AMI_ID=$(aws ec2 create-image \
     --instance-id $INSTANCE_ID \
     --name $AMI_NAME \
     --description "$AMI_DESC" \
-    --no-reboot \
     --query 'ImageId' \
     --output text \
     --region $AWS_REGION)
 
 # Wait for image state to be `available`
 echo "-------> Wait for image ready"
-bash waitforimage.sh -i $AMI_ID -s available -d 5s
+bash ../Common/waitforimage.sh -i $AMI_ID -s available -d 5s
 
 
 # Remember API Snapshot ID for destructor
@@ -130,7 +142,6 @@ INSTANCE_ID=$(aws ec2 run-instances \
 	--count 1 --instance-type $INSTANCE_TYPE \
 	--key-name $SSH_KEY_NAME \
 	--security-group-ids $SG_ID \
-    --user-data file://webconf.sh \
     --query 'Instances[0].{InstanceId:InstanceId}' \
     --output text \
     --region $AWS_REGION)
@@ -145,7 +156,6 @@ PUBLIC_IP=$(aws ec2 describe-instances \
 
 # Tell user everithing is OK
 echo -e "\e[32mApache web server is created!"
-echo -e "NOTE: Web server may be unvailible for up to 5min from now."
 echo -e "Use following link to see it works:\n\e[0m"
 
 echo -e "\t\e[34mhttp://$PUBLIC_IP/\e[0m"
@@ -157,13 +167,13 @@ echo "#!/bin/bash
 aws ec2 terminate-instances --instance-ids $INSTANCE_ID --region $AWS_REGION > /dev/null
 
 # Wait for instance statustates to be terminated
-bash waitfor.sh -i $INSTANCE_ID -s terminated -d 5s
+bash ../Common/waitfor.sh -i $INSTANCE_ID -s terminated -d 5s
 
-# Deregister image
-aws ec2 deregister-image --image-id $AMI_ID --region $AWS_REGION
+# Deregister image (uncomment if needed)
+# aws ec2 deregister-image --image-id $AMI_ID --region $AWS_REGION
 
-# Delete snapshot
-aws ec2 delete-snapshot --snapshot-id $SNAP_ID --region $AWS_REGION
+# Delete snapshot (uncomment if needed)
+# aws ec2 delete-snapshot --snapshot-id $SNAP_ID --region $AWS_REGION
 
 # Delete SSH Key
 aws ec2 delete-key-pair --key-name $SSH_KEY_NAME --region $AWS_REGION
