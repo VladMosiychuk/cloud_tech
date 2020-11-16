@@ -9,10 +9,12 @@ while getopts ":i:" opt; do
   esac
 done
 
-# If IMAGE_ID is not specified, use default
+# Stop script execution if IMAGE_ID is not specified
 if [ -z "$IMAGE_ID" ]
 then
-    IMAGE_ID="ami-0605906d8afc35690" # Image from Lab_03
+    echo "Lack of parameters!"
+    echo "You should provide IMAGE_ID (-i)"
+    exit 0
 fi
 
 LAB_NAME="lab_04"
@@ -27,6 +29,12 @@ SG_DESC="Security group to enable incoming TCP/22, TCP/80"
 INSTANCE_TYPE="t2.micro"
 
 ELB_NAME="lab-04-elb"
+
+LT_NAME="lab_04-lt"
+LT_DESC="Launch template for lab-04"
+USER_DATA=$(cat update_html.sh | base64 -w 0)
+
+ASG_NAME="lab-04-asg"
 TG_NAME="lab-04-tg"
 
 
@@ -119,6 +127,7 @@ do
         --key-name $SSH_KEY_NAME \
         --associate-public-ip-address \
         --security-group-ids $SG_ID \
+        --user-data "$USER_DATA" \
         --subnet-id $SUBNET_ID \
         --query 'Instances[*].InstanceId' \
         --output text \
@@ -169,35 +178,30 @@ aws elbv2 create-listener \
     > /dev/null
 
 
-echo "-------> Modify index.html to be different on each instance"
-INDEX_FN="/var/www/html/index.html"
+echo "-------> Create Launch Template"
 
-# Iterate over each instance id
-for INSTANCE_ID in ${INSTANCE_IDS[@]};
-do
-
-    # Find out Public IP of current instance 
-    PUBLIC_IP=$(aws ec2 describe-instances \
-        --instance-id $INSTANCE_ID \
-        --query 'Reservations[0].Instances[0].{PublicIpAddress:PublicIpAddress}' \
-        --output text \
-        --region $AWS_REGION)
+LT_ID=$(aws ec2 create-launch-template \
+    --launch-template-name $LT_NAME \
+    --version-description "$LT_DESC" \
+    --launch-template-data "{\"NetworkInterfaces\":[{\"DeviceIndex\":0,\"AssociatePublicIpAddress\":true,\"Groups\":[\"$SG_ID\"],\"DeleteOnTermination\":true}],\"ImageId\":\"$IMAGE_ID\",\"InstanceType\":\"$INSTANCE_TYPE\",\"KeyName\":\"$SSH_KEY_NAME\",\"UserData\":\"$USER_DATA\"}" \
+    --add 
+    --query 'LaunchTemplate.LaunchTemplateId' \
+    --output text \
+    --region $AWS_REGION)
 
 
-    echo "-------> Change content of index.html in $INSTANCE_ID"
+echo "-------> Create Auto Scaling Group"
 
-    # Add host to known host to prevent script interruption
-    ssh -o StrictHostKeyChecking=no ec2-user@$PUBLIC_IP > /dev/null
+aws autoscaling create-auto-scaling-group \
+    --auto-scaling-group-name $ASG_NAME \
+    --launch-template LaunchTemplateId=$LT_ID \
+    --min-size 2 \
+    --max-size 2 \
+    --desired-capacity 2 \
+    --vpc-zone-identifier "$SUBNET_01_ID,$SUBNET_02_ID" \
+    --target-group-arns $TG_ARN \
+    --region $AWS_REGION
 
-    # New index.html content
-    CONTENT="<h1>It is instance $INSTANCE_ID</h1>"
-
-    # Connect to instance using ssh and change content of index.html
-    ssh -i $SSH_KEY_FILE ec2-user@$PUBLIC_IP -T \
-    "rm -f $INDEX_FN && echo '$CONTENT' > $INDEX_FN" \
-    > /dev/null
-
-done
 
 # Fetch DNS Name of Load Balacer
 LB_DNS_NAME=$(aws elbv2 describe-load-balancers \
@@ -232,6 +236,12 @@ aws ec2 delete-key-pair --key-name $SSH_KEY_NAME --region $AWS_REGION
 
 # Remove file with SSH Key
 rm -f $SSH_KEY_FILE
+
+# Delete Auto Scaling group
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $ASG_NAME --force-delete --region $AWS_REGION
+
+# Delete Launch Template
+aws ec2 delete-launch-template --launch-template-id $LT_ID --region $AWS_REGION > /dev/null
 
 # Delete Load Balancer
 aws elbv2 delete-load-balancer --load-balancer-arn $LB_ARN --region $AWS_REGION
