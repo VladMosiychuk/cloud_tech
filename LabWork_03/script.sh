@@ -100,9 +100,6 @@ PUBLIC_IP=$(aws ec2 describe-instances \
     --output text \
     --region $AWS_REGION)
 
-# Add host to known host to prevent script interruption
-ssh -o StrictHostKeyChecking=no ec2-user@$PUBLIC_IP > /dev/null
-
 # Wait for index.html file to be created
 bash ../Common/waitforfile.sh -i $SSH_KEY_FILE -h $PUBLIC_IP -f /var/www/html/index.html
 

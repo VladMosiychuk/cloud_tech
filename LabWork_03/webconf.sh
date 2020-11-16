@@ -24,5 +24,5 @@ sudo chmod 2775 /var/www
 find /var/www -type d -exec sudo chmod 2775 {} \;
 find /var/www -type f -exec sudo chmod 0664 {} \;
 
-# Create a PHP file in Apache document root
+# Create a HTML file in Apache document root
 echo "<h1>Congratulations! This instance created using custom AMI!</h1>" > /var/www/html/index.html
