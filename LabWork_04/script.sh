@@ -184,7 +184,6 @@ LT_ID=$(aws ec2 create-launch-template \
     --launch-template-name $LT_NAME \
     --version-description "$LT_DESC" \
     --launch-template-data "{\"NetworkInterfaces\":[{\"DeviceIndex\":0,\"AssociatePublicIpAddress\":true,\"Groups\":[\"$SG_ID\"],\"DeleteOnTermination\":true}],\"ImageId\":\"$IMAGE_ID\",\"InstanceType\":\"$INSTANCE_TYPE\",\"KeyName\":\"$SSH_KEY_NAME\",\"UserData\":\"$USER_DATA\"}" \
-    --add 
     --query 'LaunchTemplate.LaunchTemplateId' \
     --output text \
     --region $AWS_REGION)
