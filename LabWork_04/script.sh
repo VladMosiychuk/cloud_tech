@@ -218,6 +218,15 @@ echo -e "Use following link for verification:\n\e[0m"
 echo -e "\t\e[34mhttp://$LB_DNS_NAME/\e[0m"
 
 
+# Create xporter for variables that can be used in later labworks
+echo "#!/bin/bash
+
+export LAB_4_LB_ARN=\"${LB_ARN}\"
+export LAB_4_TG_ARN=\"${TG_ARN}\"
+
+" > "xporter.sh"
+
+
 # Create destructor script to be able easily clean up everything
 echo "#!/bin/bash
 

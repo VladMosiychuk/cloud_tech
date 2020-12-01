@@ -1,5 +1,11 @@
 # Destructors for all labworks
 */destructor.sh
 
+# Exporterst for all labworks
+*/xporter.sh
+
 # SSH Keys
 *.pem
+
+# Credentials
+*/set-env.sh
