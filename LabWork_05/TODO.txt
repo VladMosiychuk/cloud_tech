@@ -1,0 +1,6 @@
+1. Create new SNS topic for ELB health checking and set name for it.  Use ELB and EC2 instances from PracticTask#4
+2. Create SNS subscription for your topic. Configure your e-mail as endpoint for your subscription.
+3. Create CloudWatch Alarm for ELB targets (HealthyHostCount)
+4. Configure CloudWatch Alarm to use SNS notification.  
+5. Check your notifications by removing instance from ELB target group.
+6. Write your code and original e-mail to github repo put URL to results_table.
