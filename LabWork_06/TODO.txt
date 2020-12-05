@@ -1,0 +1,11 @@
+1. This practic task is the same to Practic task #4. Use local terraform state file (by default). 
+2. Create new ALB (Application Load balancer). Type: intrernet-faced
+3. Configure SecurityGroup for your LB:  enable incoming TCP/80.
+4. Create two ec2 instances in the same VPC (default) as it is for ELB. Use AMI image from Practic #3.
+5. Configure security group for your instances to allow incoming trafic only from LB. 
+6. Add your instances to LB Target Group.
+7. Manually modify index.html on each of your Apache servers to be different.
+8. Check your LB and write URL to to results_table.
+9. Bonus task: create ASG for your instances. Configure it for your LB. (Min size:2, Max size:2) 
+
+    Note: all shoud be completed using terraform
