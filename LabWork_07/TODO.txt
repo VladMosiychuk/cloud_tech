@@ -1,0 +1,9 @@
+1. Create new VPC (not default!). Make sure that it has access from the Internet allowed.
+2. Create security group for your new RDS (disable access from network 50.31.252.0/24)
+3. Create RDS Aurora or MySQL DB using free RDS instance.
+4. Create DB named “dbtest” with user “testuser” and password “Lgfd!53Kjst34”
+5. Check your result with: mysql -h”URL”  -u”testuser” -p”Lgfd!53Kjst34” -e “SHOW DATABASES;” 
+6. Write URL and link to github with terraform code of your RDS instance to results_table.
+! Do not push MySQL password to github! Use: MYSQL_PWD environment variable.
+
+    Note: all shoud be completed only with terraform
