@@ -1,0 +1,3 @@
+1. Follow all steps described https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html
+2. Check your result by uploading image to s3 bucket
+3. Write URL of s3 bucket and link to aws cli commands results_table.
