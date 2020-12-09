@@ -1,0 +1,3 @@
+1. Follow all steps described https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html
+2. Check your result by connecting to it.
+3. Write URL andd link to aws cli commands results_table.
